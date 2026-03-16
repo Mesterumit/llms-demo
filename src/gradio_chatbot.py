@@ -1,10 +1,10 @@
 '''
-Gradio chatbot using llama.cpp server backend.
+Gradio chatbot with selectable backend (Ollama or llama.cpp).
 
 This demo provides a web UI where users can:
+- Choose between Ollama and llama.cpp backends
 - Customize the system prompt
 - Have multi-turn conversations with context
-- Connect to local or remote llama.cpp servers
 
 Usage:
     python src/gradio_chatbot.py
@@ -13,6 +13,8 @@ Usage:
 import os
 import gradio as gr
 from dotenv import load_dotenv
+from langchain_ollama import ChatOllama
+from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 from openai import OpenAI
 
 # Load environment variables from .env file
@@ -28,6 +30,17 @@ default_system_prompt = (
     'You are a helpful teaching assistant at an AI/ML boot camp. '
     'Answer questions in simple language with examples when possible. '
     'Answer in the style of a pirate and use nautical themed analogies.'
+)
+
+# --- Initialize Ollama backend ---
+
+# Model to use from Ollama (must be pulled first: ollama pull qwen2.5:3b)
+ollama_model = 'qwen2.5:3b'
+
+# Create Ollama client using LangChain wrapper
+ollama_client = ChatOllama(
+    model=ollama_model,
+    temperature=temperature
 )
 
 # --- Initialize llama.cpp backend (OpenAI-compatible API) ---
@@ -56,65 +69,110 @@ llamacpp_client = OpenAI(
 llamacpp_model = 'gpt-oss-20b'
 
 
-def respond(message, history, system_prompt):
-    '''Sends message to llama.cpp server, gets response back.
+def respond(message, history, backend, system_prompt):
+    '''Sends message to selected model backend, gets response back.
     
     Args:
         message: User's current message
         history: List of [user_msg, assistant_msg] pairs from Gradio
+        backend: Either 'Ollama' or 'llama.cpp'
         system_prompt: System prompt to set model behavior
     
     Returns:
-        Response string from the model (or error message if server unavailable)
+        Response string from the model (or error message if backend unavailable)
     '''
     
-    try:
-        # Build message list in OpenAI format (dict with 'role' and 'content')
-        messages = [{'role': 'system', 'content': system_prompt}]
+    # --- Ollama Backend ---
+    if backend == 'Ollama':
+        try:
+            # Build message list in LangChain format (SystemMessage, HumanMessage, AIMessage)
+            messages = [SystemMessage(content=system_prompt)]
+            
+            # Add conversation history to maintain context
+            # Gradio passes history as list of [user, assistant] pairs
+            for item in history:
+                if isinstance(item, (list, tuple)) and len(item) >= 2:
+                    user_msg, assistant_msg = item[0], item[1]
+                    messages.append(HumanMessage(content=user_msg))
+                    messages.append(AIMessage(content=assistant_msg))
+            
+            # Add current user message
+            messages.append(HumanMessage(content=message))
+            
+            # Invoke Ollama model and return response
+            response = ollama_client.invoke(messages)
+            return response.content
         
-        # Add conversation history to maintain context
-        for item in history:
-            if isinstance(item, (list, tuple)) and len(item) >= 2:
-                user_msg, assistant_msg = item[0], item[1]
-                messages.append({'role': 'user', 'content': user_msg})
-                messages.append({'role': 'assistant', 'content': assistant_msg})
-        
-        # Add current user message
-        messages.append({'role': 'user', 'content': message})
-        
-        # Call llama.cpp server using OpenAI-compatible API
-        response = llamacpp_client.chat.completions.create(
-            model=llamacpp_model,
-            messages=messages,
-            temperature=temperature,
-        )
-        
-        # Extract and return response text
-        return response.choices[0].message.content
+        except Exception as e:
+            # Return helpful error message if Ollama server is unreachable
+            error_msg = (
+                f'**Ollama backend is unavailable**\n\n'
+                f'Make sure the Ollama server is running:\n'
+                f'```bash\n'
+                f'ollama serve\n'
+                f'```\n\n'
+                f'Error details: {str(e)}'
+            )
+            return error_msg
     
-    except Exception as e:
-        # Return helpful error message if llama.cpp server is unreachable
-        error_msg = (
-            f'**llama.cpp backend is unavailable**\n\n'
-            f'Make sure the llama-server is running at: `{llamacpp_base_url}`\n\n'
-            f'To start the server:\n'
-            f'```bash\n'
-            f'llama.cpp/build/bin/llama-server -m <model.gguf> --host 0.0.0.0 --port 8502\n'
-            f'```\n\n'
-            f'Or configure remote server in `.env` file.\n\n'
-            f'Error details: {str(e)}'
-        )
-        return error_msg
+    # --- llama.cpp Backend ---
+    else:
+        try:
+            # Build message list in OpenAI format (dict with 'role' and 'content')
+            messages = [{'role': 'system', 'content': system_prompt}]
+            
+            # Add conversation history to maintain context
+            for item in history:
+                if isinstance(item, (list, tuple)) and len(item) >= 2:
+                    user_msg, assistant_msg = item[0], item[1]
+                    messages.append({'role': 'user', 'content': user_msg})
+                    messages.append({'role': 'assistant', 'content': assistant_msg})
+            
+            # Add current user message
+            messages.append({'role': 'user', 'content': message})
+            
+            # Call llama.cpp server using OpenAI-compatible API
+            response = llamacpp_client.chat.completions.create(
+                model=llamacpp_model,
+                messages=messages,
+                temperature=temperature,
+            )
+            
+            # Extract and return response text
+            return response.choices[0].message.content
+        
+        except Exception as e:
+            # Return helpful error message if llama.cpp server is unreachable
+            error_msg = (
+                f'**llama.cpp backend is unavailable**\n\n'
+                f'Make sure the llama-server is running at: `{llamacpp_base_url}`\n\n'
+                f'To start the server:\n'
+                f'```bash\n'
+                f'llama.cpp/build/bin/llama-server -m <model.gguf> --host 0.0.0.0 --port 8502\n'
+                f'```\n\n'
+                f'Or configure remote server in `.env` file.\n\n'
+                f'Error details: {str(e)}'
+            )
+            return error_msg
 
 
 
 # --- Build Gradio UI ---
 
 # Use Gradio Blocks for custom layout with multiple input controls
-with gr.Blocks(title='llama.cpp chatbot') as demo:
+with gr.Blocks(title='Multi-backend chatbot') as demo:
     
     # Page title and description
-    gr.Markdown(f'# llama.cpp chatbot\n\n**Model:** {llamacpp_model} | **Server:** {llamacpp_base_url}')
+    gr.Markdown('# Multi-backend chatbot')
+    
+    # Backend selector - radio buttons for Ollama vs llama.cpp
+    with gr.Row():
+        backend_selector = gr.Radio(
+            choices=['Ollama', 'llama.cpp'],
+            value='llama.cpp',
+            label='Model Backend',
+            info=f'Ollama: {ollama_model} | llama.cpp: {llamacpp_model} @ {llamacpp_base_url}'
+        )
     
     # System prompt input - allows customizing model behavior
     system_prompt_input = gr.Textbox(
@@ -124,10 +182,10 @@ with gr.Blocks(title='llama.cpp chatbot') as demo:
         placeholder='Enter system prompt to set the assistant\'s behavior...'
     )
     
-    # Chat interface with system prompt as additional input
+    # Chat interface with backend and system prompt as additional inputs
     chatbot = gr.ChatInterface(
         fn=respond,
-        additional_inputs=[system_prompt_input],
+        additional_inputs=[backend_selector, system_prompt_input],
     )
 
 
