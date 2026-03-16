@@ -213,51 +213,6 @@ The `-c` flag sets the maximum context length in tokens (combined prompt + respo
 
 If the server starts but inference is unexpectedly slow with high CPU usage, an oversized context is the most likely cause. Start conservative (`-c 8192`) and increase only if needed.
 
-### Firewall configuration
-
-If accessing the server remotely, configure your firewall:
-
-```bash
-# UFW
-sudo ufw allow 8502/tcp
-
-# firewalld
-sudo firewall-cmd --permanent --add-port=8502/tcp
-sudo firewall-cmd --reload
-
-# iptables
-sudo iptables -A INPUT -p tcp --dport 8502 -j ACCEPT
-sudo iptables-save | sudo tee /etc/iptables/rules.v4
-```
-
-### Reverse proxy (optional)
-
-For production deployments, consider using nginx or Apache as a reverse proxy with SSL:
-
-```nginx
-# /etc/nginx/sites-available/llama-server
-server {
-    listen 443 ssl http2;
-    server_name llm.example.com;
-
-    ssl_certificate /etc/letsencrypt/live/llm.example.com/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/llm.example.com/privkey.pem;
-
-    location / {
-        proxy_pass http://localhost:8502;
-        proxy_http_version 1.1;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        
-        # For streaming responses
-        proxy_buffering off;
-        proxy_cache off;
-    }
-}
-```
-
 ## Troubleshooting
 
 ### OpenSSL warning during cmake
@@ -333,8 +288,5 @@ sudo systemctl start llamacpp.service
 ## Security considerations
 
 1. **API key**: Use a strong random key (32+ characters)
-2. **Firewall**: Only expose port 8502 to trusted networks
-3. **User isolation**: Run as dedicated `llama` user (not root)
-4. **File permissions**: Ensure models are readable only by `llama` user
-5. **SSL/TLS**: Use reverse proxy with HTTPS for remote access
-6. **Rate limiting**: Consider implementing rate limits at proxy level
+2. **User isolation**: Run as dedicated `llama` user (not root)
+3. **File permissions**: Ensure models are readable only by `llama` user
