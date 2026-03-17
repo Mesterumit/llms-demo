@@ -142,6 +142,7 @@ def respond(message, history, backend, system_prompt):
             return response.choices[0].message.content
         
         except Exception as e:
+
             # Return helpful error message if llama.cpp server is unreachable
             error_msg = (
                 f'**llama.cpp backend is unavailable**\n\n'
@@ -160,10 +161,10 @@ def respond(message, history, backend, system_prompt):
 # --- Build Gradio UI ---
 
 # Use Gradio Blocks for custom layout with multiple input controls
-with gr.Blocks(title='Multi-backend chatbot') as demo:
+with gr.Blocks(title='LLM chatbot demo') as demo:
     
     # Page title and description
-    gr.Markdown('# Multi-backend chatbot')
+    gr.Markdown('# LLM chatbot demo')
     
     # Backend selector - radio buttons for Ollama vs llama.cpp
     with gr.Row():
@@ -186,8 +187,7 @@ with gr.Blocks(title='Multi-backend chatbot') as demo:
     chatbot = gr.ChatInterface(
         fn=respond,
         additional_inputs=[backend_selector, system_prompt_input],
-        clear_btn='Clear Conversation',
-        undo_btn='Undo',
+
     )
 
 
