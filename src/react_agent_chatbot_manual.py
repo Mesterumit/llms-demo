@@ -147,9 +147,9 @@ Thought: I have the answer
 Answer: There are 283 days until Christmas from today.
 
 INCORRECT Examples (DO NOT DO THIS):
-❌ {{"start_date":"2026-03-17","end_date":"2026-12-25"}}
-❌ days_between("2026-03-17", "2026-12-25")
-❌ Just outputting tool arguments without "Thought:" and "Action:"
+- {{"start_date":"2026-03-17","end_date":"2026-12-25"}}
+- days_between("2026-03-17", "2026-12-25")
+- Just outputting tool arguments without "Thought:" and "Action:"
 
 Remember: ALWAYS start with "Thought:", then use "Action:" for tool calls.
 """
