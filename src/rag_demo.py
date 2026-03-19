@@ -55,12 +55,20 @@ embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
 # Vector store (PostgreSQL + pgvector)
 # ---------------------------------------------------------------------------
 
-database_url = os.environ.get("DATABASE_URL")
-if not database_url:
+db_user = os.environ.get("DB_USER")
+db_password = os.environ.get("DB_PASSWORD")
+db_host = os.environ.get("DB_HOST")
+db_port = os.environ.get("DB_PORT", "5432")
+db_name = os.environ.get("DB_NAME")
+
+missing = [k for k, v in {"DB_USER": db_user, "DB_PASSWORD": db_password, "DB_HOST": db_host, "DB_NAME": db_name}.items() if not v]
+if missing:
     raise EnvironmentError(
-        "DATABASE_URL environment variable is not set.\n"
-        "Example: postgresql+psycopg://user:pass@localhost:5432/mydb"
+        f"Missing required environment variable(s): {', '.join(missing)}\n"
+        "Set DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, and DB_NAME in your .env file."
     )
+
+database_url = f"postgresql+psycopg://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
 
 vector_store = PGVector(
     embeddings=embeddings,
