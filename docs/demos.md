@@ -136,7 +136,7 @@ python demos/chatbots/gradio_chatbot.py
 # 4. Open the URL shown in the terminal (usually http://127.0.0.1:7860)
 ```
 
-## Demo 5: ReAct agent chatbot
+## Demo 6: ReAct agent chatbot
 
 **Files:** 
 - `demos/langchain_patterns/react_agent_chatbot.py` - Uses LangChain's agent framework
@@ -208,7 +208,7 @@ python demos/langchain_patterns/react_agent_chatbot_manual.py
 - Try asking multi-step questions that require multiple tool calls
 - **Compare both versions**: Run the same question through both demos to see how the manual implementation exposes the mechanics that LangChain handles automatically
 
-## Demo 6: LangChain basics
+## Demo 5: LangChain basics
 
 **File:** `demos/langchain_patterns/langchain_demo.py`
 

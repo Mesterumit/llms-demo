@@ -1,4 +1,4 @@
-# Activity 3: Extending the ReAct agent
+# Activity 4: Extending the ReAct agent
 
 **Objective:** Enhance the ReAct agent chatbot by adding custom tools and testing multi-step reasoning with real-world problems.
 
