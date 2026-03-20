@@ -136,6 +136,61 @@ python demos/chatbots/gradio_chatbot.py
 # 4. Open the URL shown in the terminal (usually http://127.0.0.1:7860)
 ```
 
+## Demo 5: LangChain basics
+
+**File:** `demos/langchain_patterns/langchain_demo.py`
+
+**Concepts covered:**
+- Chat models and LLM wrappers
+- Prompt templates with variable substitution
+- Structured output parsing with Pydantic schemas
+- Basic chains and composition with LCEL
+- Few-shot learning patterns
+
+**Tools used:**
+- [LangChain](libraries.md) - Core framework components
+- [Ollama](inference_servers.md) or [llama.cpp](inference_servers.md) - Backend LLM
+- [Gradio](libraries.md) - Interactive web interface
+
+**Running the demo:**
+
+```bash
+# 1. Start the Ollama server in a terminal
+ollama serve
+
+# 2. Pull a model (in another terminal)
+ollama pull qwen2.5:3b
+
+# 3. Run the LangChain demo
+python demos/langchain_patterns/langchain_demo.py
+
+# 4. Open the URL shown in the terminal (usually http://127.0.0.1:7860)
+```
+
+**Four interactive examples:**
+
+1. **Simple chain**: Prompt template → LLM → String output
+   - Try: "machine learning", "photosynthesis", "blockchain"
+
+2. **Sentiment analysis**: Structured JSON output with Pydantic schema
+   - Try: Product reviews, comments, social media posts
+   - See how the parser extracts sentiment, confidence, and key phrases
+
+3. **Entity extraction**: Different schemas for different entity types
+   - Person: name, age, occupation, location
+   - Recipe: name, cuisine, ingredients, difficulty
+   - Switch schemas to see how the same chain extracts different information
+
+4. **Few-shot learning**: Style classification with examples
+   - The model learns from 4 in-prompt examples
+   - Try: Technical, casual, formal, or creative writing styles
+
+**What to observe:**
+- **Reusability**: Same chain works for multiple inputs
+- **Type safety**: Pydantic schemas ensure structured outputs
+- **Composability**: Chains combine prompt, model, and parser seamlessly
+- **Format instructions**: See how Pydantic schemas generate parsing guidance
+
 ## Demo 6: ReAct agent chatbot
 
 **Files:** 
@@ -208,57 +263,47 @@ python demos/langchain_patterns/react_agent_chatbot_manual.py
 - Try asking multi-step questions that require multiple tool calls
 - **Compare both versions**: Run the same question through both demos to see how the manual implementation exposes the mechanics that LangChain handles automatically
 
-## Demo 5: LangChain basics
+## Demo 7: RAG system
 
-**File:** `demos/langchain_patterns/langchain_demo.py`
+**File:** `demos/rag_system/rag_demo.py`
 
 **Concepts covered:**
-- Chat models and LLM wrappers
-- Prompt templates with variable substitution
-- Structured output parsing with Pydantic schemas
-- Basic chains and composition with LCEL
-- Few-shot learning patterns
+- Retrieval-Augmented Generation (RAG) pipeline
+- Document ingestion, chunking, and embedding
+- Vector similarity search with pgvector
+- Grounded LLM responses with source citations
+- Modular ingestor pattern (`BaseIngestor`)
 
 **Tools used:**
-- [LangChain](libraries.md) - Core framework components
+- [LangChain](libraries.md) - RAG chain composition and retriever
+- [HuggingFace](libraries.md) - Local embedding model (`all-MiniLM-L6-v2`)
+- PostgreSQL + pgvector - Vector store
 - [Ollama](inference_servers.md) or [llama.cpp](inference_servers.md) - Backend LLM
-- [Gradio](libraries.md) - Interactive web interface
+- [Gradio](libraries.md) - Web interface with Ingest / Query / Settings tabs
 
 **Running the demo:**
 
 ```bash
-# 1. Start the Ollama server in a terminal
-ollama serve
+# 1. Ensure PostgreSQL with pgvector is accessible and .env is configured
+#    (DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME)
 
-# 2. Pull a model (in another terminal)
-ollama pull qwen2.5:3b
+# 2. Start your LLM backend (llama.cpp is the default)
+ollama serve   # or start llama-server
 
-# 3. Run the LangChain demo
-python demos/langchain_patterns/langchain_demo.py
+# 3. Run the RAG demo
+python demos/rag_system/rag_demo.py
 
 # 4. Open the URL shown in the terminal (usually http://127.0.0.1:7860)
 ```
 
-**Four interactive examples:**
+**Three tabs:**
 
-1. **Simple chain**: Prompt template → LLM → String output
-   - Try: "machine learning", "photosynthesis", "blockchain"
-
-2. **Sentiment analysis**: Structured JSON output with Pydantic schema
-   - Try: Product reviews, comments, social media posts
-   - See how the parser extracts sentiment, confidence, and key phrases
-
-3. **Entity extraction**: Different schemas for different entity types
-   - Person: name, age, occupation, location
-   - Recipe: name, cuisine, ingredients, difficulty
-   - Switch schemas to see how the same chain extracts different information
-
-4. **Few-shot learning**: Style classification with examples
-   - The model learns from 4 in-prompt examples
-   - Try: Technical, casual, formal, or creative writing styles
+1. **Ingest**: Choose a source (Wikipedia), enter a topic, and click **Ingest** to embed and store chunks in the knowledge base
+2. **Query**: Ask questions - the retriever finds the most relevant chunks and passes them as context to the LLM
+3. **Settings**: Switch between Ollama and llama.cpp backends; clear the vector store collection
 
 **What to observe:**
-- **Reusability**: Same chain works for multiple inputs
-- **Type safety**: Pydantic schemas ensure structured outputs
-- **Composability**: Chains combine prompt, model, and parser seamlessly
-- **Format instructions**: See how Pydantic schemas generate parsing guidance
+- The **Sources** panel shows which document chunks were retrieved for each answer
+- Ingest the same topic twice to see deduplication behaviour
+- Ask a question about something *not* ingested - notice how the grounded answer differs from a hallucinated one
+- Switch backends (Ollama vs. llama.cpp) to compare answer quality

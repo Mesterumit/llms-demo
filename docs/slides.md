@@ -69,3 +69,16 @@ Introduction to building structured LLM applications with LangChain.
 - Basic chains and composition with LCEL
 
 **Location:** `slides/lesson_48_langchain_basics.md`
+
+## Lesson 49: LangChain advanced features
+
+Advanced LangChain patterns: conversational memory, the RAG pipeline, and agents.
+
+**Topics covered:**
+- Conversational memory strategies (`ConversationBufferMemory`, `ConversationSummaryMemory`, etc.)
+- Document loading, splitting, and embedding
+- Vector stores and retrievers (RAG pipeline)
+- Agents and the ReAct pattern
+- Tools and LangChain agent components
+
+**Location:** `slides/lesson_49_langchain_advanced.md`

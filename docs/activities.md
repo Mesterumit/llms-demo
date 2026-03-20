@@ -45,33 +45,6 @@ Build a practical text summarization script applying various prompting technique
 
 **Location:** `activities/activity_2_text_summarization.md`
 
-## Activity 4: Extending the ReAct agent
-
-Enhance the ReAct agent chatbot by adding custom tools and testing multi-step reasoning.
-
-**Duration:** 45-60 minutes
-
-**Skills practiced:**
-- Creating LangChain tools with the `@tool` decorator
-- Understanding agent decision-making and tool selection
-- Debugging tool execution and agent behavior
-- Multi-step problem solving with tool chaining
-
-**Prerequisites:**
-- Completed Activities 1-3
-- Python programming experience
-- Understanding of Lesson 47 (Advanced prompting - ReAct)
-- Familiarity with the ReAct agent demo
-
-**What you'll do:**
-- Study existing tool implementations
-- Create a new tool (temperature converter, text analyzer, or custom)
-- Register your tool with the agent
-- Test single-tool and multi-tool reasoning
-- Debug and improve your implementation
-
-**Location:** `activities/activity_4_react_agent_tools.md`
-
 ## Activity 3: Building LangChain chains
 
 Build practical LangChain applications using prompt templates, output parsers, and chains.
@@ -98,4 +71,56 @@ Build practical LangChain applications using prompt templates, output parsers, a
 - Learn debugging and best practices
 
 **Location:** `activities/activity_3_langchain_chains.md`
+
+## Activity 4: Extending the ReAct agent
+
+Enhance the ReAct agent chatbot by adding custom tools and testing multi-step reasoning.
+
+**Duration:** 45-60 minutes
+
+**Skills practiced:**
+- Creating LangChain tools with the `@tool` decorator
+- Understanding agent decision-making and tool selection
+- Debugging tool execution and agent behavior
+- Multi-step problem solving with tool chaining
+
+**Prerequisites:**
+- Completed Activities 1-3
+- Python programming experience
+- Understanding of Lesson 49 (LangChain advanced - agents)
+- Familiarity with the ReAct agent demo
+
+**What you'll do:**
+- Study existing tool implementations
+- Create a new tool (temperature converter, text analyzer, or custom)
+- Register your tool with the agent
+- Test single-tool and multi-tool reasoning
+- Debug and improve your implementation
+
+**Location:** `activities/activity_4_react_agent_tools.md`
+
+## Activity 5: Extending the RAG knowledge system
+
+Add a new document source to the RAG demo by implementing the `BaseIngestor` interface.
+
+**Duration:** 45-60 minutes
+
+**Skills practiced:**
+- Implementing a Python interface (`BaseIngestor`)
+- Using LangChain document loaders (`WebBaseLoader`)
+- Chunking documents with `RecursiveCharacterTextSplitter`
+- Registering new components in a running Gradio application
+
+**Prerequisites:**
+- Completed Activities 1-4
+- Python programming experience
+- Understanding of Lesson 49 (LangChain advanced - RAG pipeline)
+- Familiarity with the RAG system demo
+
+**What you'll do:**
+- Explore the existing `WikipediaIngestor` and `BaseIngestor` interface
+- Implement `URLIngestor` using `WebBaseLoader`
+- Register it in the demo and verify it appears in the UI
+
+**Location:** `activities/activity_5_rag_sources.md`
 

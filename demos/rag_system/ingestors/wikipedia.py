@@ -14,8 +14,15 @@ from .base import BaseIngestor
 class WikipediaIngestor(BaseIngestor):
     """Ingestor that fetches Wikipedia articles by topic name."""
 
-    def __init__(self, load_max_docs: int = 3, chunk_size: int = 500, chunk_overlap: int = 50):
+    def __init__(
+        self,
+        load_max_docs: int = 3,
+        chunk_size: int = 500,
+        chunk_overlap: int = 50
+    ):
+        
         self.load_max_docs = load_max_docs
+        
         self._splitter = RecursiveCharacterTextSplitter(
             chunk_size=chunk_size,
             chunk_overlap=chunk_overlap,
@@ -35,6 +42,8 @@ class WikipediaIngestor(BaseIngestor):
         Returns:
             List of text chunks as LangChain Documents.
         """
+
         loader = WikipediaLoader(query=source, load_max_docs=self.load_max_docs)
         docs = loader.load()
+
         return self._splitter.split_documents(docs)
