@@ -273,3 +273,86 @@ trainer = SFTTrainer(
 trainer.train()
 ```
 
+---
+
+## HuggingFace evaluate
+
+Unified API for computing text generation metrics (ROUGE, BLEU, BERTScore, and many others) with a consistent interface across all metric families.
+
+**Links:**
+- [Documentation](https://huggingface.co/docs/evaluate)
+- [GitHub](https://github.com/huggingface/evaluate)
+- [Available metrics](https://huggingface.co/evaluate-metric)
+
+### Key functions
+
+| Function | Purpose |
+|----------|---------|
+| `evaluate.load(name)` | Load a metric by name (downloads and caches on first use) |
+| `.compute(predictions, references)` | Compute the metric for a batch of predictions |
+
+### Example usage
+
+```python
+import evaluate
+
+# ROUGE (summarization / text generation)
+rouge = evaluate.load("rouge")
+result = rouge.compute(
+    predictions=["The cat sat on the mat."],
+    references=["A cat was sitting on a mat."],
+    use_stemmer=True,
+)
+# result: {'rouge1': 0.727, 'rouge2': 0.444, 'rougeL': 0.727, 'rougeLsum': 0.727}
+
+# BLEU (translation / n-gram precision)
+bleu = evaluate.load("bleu")
+result = bleu.compute(
+    predictions=[["the", "cat", "sat", "on", "mat"]],     # tokenised
+    references=[[["a", "cat", "was", "sitting", "on", "mat"]]],
+)
+# result: {'bleu': 0.134, ...}
+
+# BERTScore (semantic similarity via contextual embeddings)
+bertscore = evaluate.load("bertscore")
+result = bertscore.compute(
+    predictions=["The cat sat on the mat."],
+    references=["A cat was sitting on a mat."],
+    lang="en",
+    model_type="distilbert-base-uncased",
+)
+# result: {'precision': [0.96], 'recall': [0.95], 'f1': [0.95], ...}
+```
+
+---
+
+## bert-score
+
+Underlying library for BERTScore — contextual embedding similarity metric based on BERT-family models. Used automatically via the `evaluate` `"bertscore"` metric but can also be called directly.
+
+**Links:**
+- [Paper](https://arxiv.org/abs/1904.09675)
+- [GitHub](https://github.com/Tiiiger/bert_score)
+
+### When to use BERTScore
+
+BERTScore complements ROUGE and BLEU by measuring *semantic similarity* rather than surface-form overlap. It excels at:
+- Detecting paraphrases that share meaning but few exact words
+- Penalising responses that change key entities (e.g. dates, names) — to a degree
+- Evaluating open-ended generation where many valid wordings exist
+
+It does **not** reliably detect subtle factual errors (e.g. swapping "1887" for "1899").
+
+```python
+# Direct usage (also available via evaluate.load("bertscore"))
+from bert_score import score
+
+P, R, F1 = score(
+    cands=["Paris's iconic iron tower was built for a World's Fair."],
+    refs=["The Eiffel Tower was built for the 1889 World's Fair in Paris."],
+    lang="en",
+    model_type="distilbert-base-uncased",
+    verbose=True,
+)
+print(f"BERTScore F1: {F1.mean():.3f}")  # ~0.91 for this paraphrase
+```

@@ -96,3 +96,17 @@ How pre-trained base models are adapted into instruction-following assistants th
 - Practical VRAM requirements for consumer and server GPUs
 
 **Location:** `slides/lesson_50_finetuning_alignment.md`
+
+## Lesson 51: Benchmarking and evaluating LLMs
+
+How to measure LLM output quality using automated text metrics, standardised benchmarks, and LLM-as-judge scoring.
+
+**Topics covered:**
+- Why evaluation is hard (no ground truth, multiple quality dimensions)
+- Automated text metrics: ROUGE, BLEU, and BERTScore
+- Standard benchmarks: MMLU, HellaSwag, GSM8K, HumanEval, TruthfulQA
+- Leaderboards, data contamination, and safety evaluation
+- LLM-as-judge: rubric scoring, pairwise comparison, and failure modes
+- Evaluation frameworks: HuggingFace `evaluate`, lm-evaluation-harness, RAGAS
+
+**Location:** `slides/lesson_51_evaluating_llms.md`

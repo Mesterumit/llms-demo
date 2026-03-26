@@ -342,3 +342,51 @@ python demos/finetuning/finetuning_demo.py
 - On the **completion trap** prompt (`Things I need from the grocery store: 1. Milk 2. Eggs 3.`) - the base model continues the list; the instruct model responds to the intent
 - The **Sources** column in the model table shows the actual HuggingFace checkpoint IDs - these are genuinely different weight files, not aliases
 - The **chat template** in Tab 2 shows exactly the format the instruct model was trained on: `<|im_start|>system ... <|im_end|>` tokens are what distinguishes the two checkpoints at the data level
+
+## Demo 9: LLM evaluation demo
+
+**File:** `demos/evaluation/evaluation_demo.py`
+
+**Concepts covered:**
+- Automated text metrics: ROUGE-1/2/L, BLEU, and BERTScore
+- Standardised multiple-choice benchmarking (MMLU-style)
+- LLM-as-judge rubric scoring with structured JSON output
+- Limitations of each approach and when to use each one
+
+**Tools used:**
+- [HuggingFace `evaluate`](libraries.md) - Unified metric computation API
+- [`bert-score`](libraries.md) - Contextual embedding similarity
+- [LangChain](libraries.md) / [Ollama](inference_servers.md) - Local LLM for benchmark and judge tabs
+- [Gradio](libraries.md) - Three-tab interactive interface
+
+**Running the demo:**
+
+```bash
+# 1. Install evaluation dependencies
+pip install evaluate bert-score
+
+# 2. Start the Ollama server in a terminal
+ollama serve
+
+# 3. Pull the benchmark/judge model (in another terminal)
+ollama pull qwen2.5:3b
+
+# 4. Run the evaluation demo
+python demos/evaluation/evaluation_demo.py
+
+# 5. Open the URL shown in the terminal (usually http://127.0.0.1:7860)
+```
+
+*Note: BERTScore downloads a ~400 MB BERT model on first use. Subsequent runs are instant.*
+
+**Three tabs:**
+
+1. **Metric calculator**: Enter a reference and candidate text; compute ROUGE-1/2/L, BLEU, and BERTScore F1 in one click. Pre-filled example illustrates the paraphrase problem.
+2. **Mini benchmark**: Run `qwen2.5:3b` against 10 MMLU-style questions (Science, History, Math, Coding); filter by category; see per-question pass/fail and a category breakdown.
+3. **LLM-as-judge**: Score a candidate answer on a 1-5 rubric (factual accuracy, relevance, completeness); the judge returns structured JSON parsed into a formatted score table.
+
+**What to observe:**
+- In Tab 1: compare exact match, paraphrase, and factual error pairs — ROUGE and BERTScore diverge on the paraphrase (same meaning, different words)
+- In Tab 2: the model is instructed to reply with a single letter; see how it handles this constraint
+- In Tab 3: try the pre-filled "seasons misconception" answer — does the judge detect the factual error?
+- In Tab 3: compare the concise and padded candidate answers from the activity — does the judge exhibit verbosity bias?

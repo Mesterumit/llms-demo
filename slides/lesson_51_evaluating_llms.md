@@ -322,8 +322,8 @@ Benchmarks have a limited lifespan. New harder benchmarks are regularly released
 ## MMLU: massive multitask language understanding
 
 **57 subjects** - from high school math to professional law and medicine
-**Format:** 4-choice multiple choice
-**Metric:** accuracy
+**Format:** 4-choice multiple choice, **Metric:** accuracy
+**Paper:** [Measuring Massive Multitask Language Understanding](https://arxiv.org/abs/2009.03300) - Hendrycks et al. (2021)
 
 Examples:
 - *"A 45-year-old man presents with chest pain..."* [Medical diagnosis]
@@ -343,6 +343,7 @@ Examples:
 | **HumanEval** | Python function generation from docstrings | Code | pass@k |
 | **TruthfulQA** | Truthful answers to questions humans often get wrong | Free-form | % truthful |
 | **MATH** | Competition-level mathematics | Free-form | % correct |
+| **GAIA** | Real-world assistant tasks requiring multi-step reasoning, web search, and tool use | Agentic | % correct |
 
 ---
 
@@ -351,6 +352,10 @@ Examples:
 **[Open LLM Leaderboard](https://huggingface.co/spaces/open-llm-leaderboard/open_llm_leaderboard)** (HuggingFace - archived Mar 2025 see [here](https://huggingface.co/spaces/open-llm-leaderboard/open_llm_leaderboard/discussions/1135))
 - Standardized benchmark suite run on the same hardware
 - Reproducible, separates models released on the same day
+
+**[MMLU-Pro Leaderboard](https://huggingface.co/spaces/TIGER-Lab/MMLU-Pro)** (TIGER Lab, on HuggingFace)
+- Harder version of MMLU: 10-choice questions, more reasoning-heavy, less fact-recall
+- More discriminative than original MMLU for frontier models
 
 **[LMSYS Chatbot Arena](https://lmarena.ai/)**
 - Humans compare two anonymous models side by side
@@ -555,6 +560,7 @@ Automated metrics work best when a **reference answer exists**. For open-ended g
 
 **Papers:**
 - [ROUGE: A Package for Automatic Evaluation of Summaries](https://aclanthology.org/W04-1013/) - Lin (2004)
+- [Measuring Massive Multitask Language Understanding](https://arxiv.org/abs/2009.03300) - Hendrycks et al. (2021)
 - [BERTScore: Evaluating Text Generation with BERT](https://arxiv.org/abs/1904.09675) - Zhang et al. (2020)
 - [Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena](https://arxiv.org/abs/2306.05685) - Zheng et al. (2023)
 - [G-Eval: NLG Evaluation using GPT-4 with Better Human Alignment](https://arxiv.org/abs/2303.16634) - Liu et al. (2023)

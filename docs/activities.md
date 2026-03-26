@@ -156,3 +156,32 @@ Fine-tune a small language model on a custom instruction dataset using LoRA, the
 
 **Location:** `activities/activity_6_finetuning.md`
 
+## Activity 7: Evaluating LLM outputs
+
+Measure LLM output quality using automated text metrics and an LLM-as-judge rubric, then interpret the results critically.
+
+**Duration:** 45-60 minutes
+
+**Skills practiced:**
+- Computing ROUGE-1/2/L, BLEU, and BERTScore with HuggingFace `evaluate`
+- Interpreting metric scores and understanding their limitations
+- Designing a threshold-based quality gate
+- Writing a structured LLM-as-judge rubric prompt
+- Parsing structured JSON output from an LLM
+- Identifying verbosity bias and prompt sensitivity in judge systems
+
+**Prerequisites:**
+- Completed Activities 1-6
+- Python programming experience
+- Understanding of Lesson 51 (Benchmarking and evaluating LLMs)
+- Familiarity with the evaluation demo (`demos/evaluation/evaluation_demo.py`)
+
+**What you'll do:**
+- Compute metrics on three text pairs (exact match, paraphrase, factual error) and compare results
+- Build a quality gate function using ROUGE and BERTScore thresholds
+- Implement an LLM-as-judge function that returns rubric scores as parsed JSON
+- Evaluate three candidate answers across factual accuracy, relevance, and completeness
+- Detect verbosity bias by comparing concise vs. padded answers
+
+**Location:** `activities/activity_7_evaluation.md`
+
